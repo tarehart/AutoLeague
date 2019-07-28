@@ -22,10 +22,12 @@ def upload_to_calculated_gg(replay_path: Path):
         response = requests.post('https://calculated.gg/api/upload', files={'replays': f})
         print(f'upload response to {replay_path.name}: {response}')
 
+
 def parse_replay_id(replay_path: Path) -> str:
     replay_id, extension = replay_path.name.split('.')
     assert extension == 'replay'
     return replay_id
+
 
 @dataclass
 class ReplayMonitor(Metric):
@@ -69,6 +71,7 @@ class ReplayMonitor(Metric):
     def stop_monitoring(self):
         self.observer.stop()
         self.observer.join(1)
+
 
 def get_replay_dir() -> Path:
     replay_dir = Path.home() / 'My Documents' / 'My Games' / 'Rocket League' / 'TAGame' / 'Demos'

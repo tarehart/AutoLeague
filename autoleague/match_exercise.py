@@ -19,6 +19,7 @@ class FailDueToNoReplay(Fail):
     def __repr__(self):
         return 'FAIL: Match finished but no replay was written to disk.'
 
+
 @dataclass
 class MatchGrader(Grader):
 
@@ -47,8 +48,6 @@ class MatchGrader(Grader):
 class MatchExercise(TrainingExercise):
 
     grader: Grader = field(default_factory=MatchGrader)
-    match_config_file_name: str = None
 
     def make_game_state(self, rng: SeededRandomNumberGenerator) -> GameState:
         return GameState()  # don't need to change anything
-

@@ -1,10 +1,10 @@
 """AutoLeague
 
 Usage:
-    autoleague next_event          [--working_dir=<working_dir>][--replays=R] TODO
-    autoleague next_round_robin    [--working_dir=<working_dir>] [--replays=R] TODO
-    autoleague next_match          [--working_dir=<working_dir>] [--replays=R] TODO
-    autoleague history_dev_server  [--working_dir=<working_dir>] [--host=<host>] [--port=<port>] TODO
+    autoleague next_event          [--working_dir=<working_dir>][--replays=R]
+    autoleague next_round_robin    [--working_dir=<working_dir>] [--replays=R]
+    autoleague next_match          [--working_dir=<working_dir>] [--replays=R]
+    autoleague history_dev_server  [--working_dir=<working_dir>] [--host=<host>] [--port=<port>]
     autoleague (-h | --help)
     autoleague --version
 
@@ -25,7 +25,7 @@ import subprocess
 from docopt import docopt
 
 from autoleague.paths import WorkingDir
-from autoleague.run_matches import run_matches
+from autoleague.run_matches import run_matches, progress_league_play, RunOption
 from autoleague.version import __version__
 from autoleague.replays import ReplayPreference
 
@@ -49,13 +49,13 @@ def main():
 
     if arguments['next_event']:
         replay_preference = ReplayPreference(arguments['--replays'])
-        run_next_event(working_dir, replay_preference)
+        progress_league_play(working_dir, RunOption.EVENT, replay_preference)
     elif arguments['next_round_robin']:
         replay_preference = ReplayPreference(arguments['--replays'])
-        run_next_round_robin(working_dir, replay_preference)
+        progress_league_play(working_dir, RunOption.ROUND_ROBIN, replay_preference)
     elif arguments['next_round_robin']:
         replay_preference = ReplayPreference(arguments['--replays'])
-        run_next_match(working_dir, replay_preference)
+        progress_league_play(working_dir, RunOption.MATCH, replay_preference)
     elif arguments['history_dev_server']:
         subprocess.run(
             f'rlbottraining history_dev_server {working_dir.history_dir} --host="{arguments["--host"]}" --port={int(arguments["--port"])}',

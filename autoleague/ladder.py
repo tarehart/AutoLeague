@@ -1,12 +1,7 @@
 import json
 import math
-import random
 from pathlib import Path
 from typing import List
-
-from rlbot.parsing.directory_scanner import scan_directory_for_bot_configs
-
-from autoleague.paths import WorkingDir
 
 
 class Ladder:
@@ -43,11 +38,3 @@ class Ladder:
     def read(path: Path) -> 'Ladder':
         with open(path, 'r') as f:
             return Ladder(json.load(f))
-
-
-def create_initial_ladder(working_dir: WorkingDir) -> Ladder:
-    bots = [bot_config.name for bot_config in scan_directory_for_bot_configs(working_dir.bots)]
-    random.shuffle(bots)
-    ladder = Ladder(bots)
-    ladder.write(working_dir.get_ladder(0))
-    return ladder

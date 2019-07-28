@@ -1,6 +1,7 @@
 import json
 import random
 import shutil
+from enum import Enum
 from pathlib import Path
 from typing import Tuple, Mapping
 
@@ -9,21 +10,23 @@ from rlbot.matchconfig.match_config import MatchConfig, PlayerConfig, Team
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 from rlbot.parsing.directory_scanner import scan_directory_for_bot_configs
 from rlbot.utils.logging_utils import get_logger
+from rlbot.utils.structures.game_data_struct import GameTickPacket
+from rlbot.utils.structures.game_interface import GameInterface
 from rlbottraining.exercise_runner import run_playlist
-from rlbottraining.history.exercise_result import log_result, store_result
+from rlbottraining.history.exercise_result import log_result, store_result, ExerciseResult
 from rlbottraining.history.website.server import set_additional_website_code
 
 from autoleague.generate_matches import generate_round_robin_matches
-from autoleague.ladder import Ladder, create_initial_ladder
+from autoleague.ladder import Ladder
 from autoleague.match_exercise import MatchExercise, MatchGrader
 from autoleague.match_result import CombinedScore, MatchResult
-from autoleague.paths import WorkingDir, PackageFiles
+from autoleague.paths import WorkingDir, PackageFiles, create_initial_ladder
 from autoleague.replays import ReplayPreference, ReplayMonitor
 
 logger = get_logger('autoleague')
 
 
-class RunOption:
+class RunOption(Enum):
     EVENT = 0
     ROUND_ROBIN = 1
     MATCH = 2
@@ -130,8 +133,28 @@ def add_missing_bots(ladder: Ladder, bots: Mapping[str, BotConfigBundle]):
         print(f'Bots added to bottom of ladder: {missing_bots}')
 
 
-def start_match_and_wait_for_result(match_config: MatchConfig) -> MatchResult:
-    return None
+def fetch_ingame_result(exercise_result: ExerciseResult) -> MatchResult:
+    game_interface = GameInterface(get_logger('leagueplayer'))
+    game_interface.load_interface()
+    game_interface.wait_until_loaded()
+
+    packet = GameTickPacket()
+    game_interface.update_live_data_packet(packet)
+
+    blue = packet.game_cars[0]
+    orange = packet.game_cars[1]
+    return MatchResult(
+        blue=blue.name,
+        orange=orange.name,
+        blue_goals=packet.teams[0].score,
+        orange_goals=packet.teams[1].score,
+        blue_shots=blue.score_info.shots,
+        orange_shots=orange.score_info.shots,
+        blue_saves=blue.score_info.saves,
+        orange_saves=orange.score_info.saves,
+        blue_points=blue.score_info.score,
+        orange_points=orange.score_info.score
+    )
 
 
 def progress_league_play(working_dir: WorkingDir, run_option: RunOption, replay_preference: ReplayPreference):
@@ -163,7 +186,7 @@ def progress_league_play(working_dir: WorkingDir, run_option: RunOption, replay_
     event_results = []
 
     # Results from each round robin is stored here
-    results_dir = working_dir.get_match_result(current_event)
+    results_dir = working_dir.get_match_result_dir(current_event)
     results_dir.mkdir(exist_ok=True)
 
     # playing_division_indices contains even indices when event number is even and odd indices when event number is odd.
@@ -198,7 +221,18 @@ def progress_league_play(working_dir: WorkingDir, run_option: RunOption, replay_
                 # Play the match
                 print(f'Starting match: {match_participants[0]} vs {match_participants[1]}. Waiting for match to finish...')
                 match_config = make_match_config(working_dir, bots[match_participants[0]], bots[match_participants[1]])
-                result = start_match_and_wait_for_result(match_config)
+                match = MatchExercise(
+                    name=f'{match_participants[0]} vs {match_participants[1]}',
+                    match_config=match_config,
+                    grader=MatchGrader(
+                        replay_monitor=ReplayMonitor(replay_preference=replay_preference),
+                    )
+                )
+
+                # For loop, but should only run exactly once
+                result = None
+                for exercise_result in run_playlist([match]):
+                    result = fetch_ingame_result(exercise_result)
 
                 # Save result in file
                 result.write(result_path)

@@ -48,14 +48,13 @@
 """
 This module contains file system paths that are used by autoleague.
 """
-
+import random
 from pathlib import Path
 from typing import Mapping
 
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 from rlbot.parsing.directory_scanner import scan_directory_for_bot_configs
 
-from autoleague.bot_id import BotID, make_bot_id
 from autoleague.ladder import Ladder
 
 
@@ -88,9 +87,9 @@ class WorkingDir:
         match_name = f'{Ladder.DIVISION_NAMES[division_index]}_{blue}_vs_{orange}.json'
         return self.get_match_result_dir(event_number) / match_name
 
-    def get_bots(self) -> Mapping[BotID, BotConfigBundle]:
+    def get_bots(self) -> Mapping[str, BotConfigBundle]:
         return {
-            make_bot_id(self, bot_config): bot_config
+            bot_config.name: bot_config
             for bot_config in scan_directory_for_bot_configs(self.bots)
         }
 
@@ -105,3 +104,11 @@ class PackageFiles:
     _website_dir = _package_dir / 'website'
     additional_website_code = _website_dir / 'additional_website_code'
     additional_website_static = _website_dir / 'static'
+
+
+def create_initial_ladder(working_dir: WorkingDir) -> Ladder:
+    bots = [bot_config.name for bot_config in scan_directory_for_bot_configs(working_dir.bots)]
+    random.shuffle(bots)
+    ladder = Ladder(bots)
+    ladder.write(working_dir.get_ladder(0))
+    return ladder
