@@ -1,18 +1,15 @@
 """AutoLeague
-Runs the training exercise playlist in the given python file.
-The playlist has to be provided via a make_default_playlist() function.
 
 Usage:
-    autoleague download_bot_pack   [--working_dir=<working_dir>]
-    autoleague generate_matches    [--working_dir=<working_dir>] [--num_matches=N]
-    autoleague run_matches         [--working_dir=<working_dir>] [--replays=R]
-    autoleague history_dev_server  [--working_dir=<working_dir>] [--host=<host>] [--port=<port>]
+    autoleague next_event          [--working_dir=<working_dir>][--replays=R] TODO
+    autoleague next_round_robin    [--working_dir=<working_dir>] [--replays=R] TODO
+    autoleague next_match          [--working_dir=<working_dir>] [--replays=R] TODO
+    autoleague history_dev_server  [--working_dir=<working_dir>] [--host=<host>] [--port=<port>] TODO
     autoleague (-h | --help)
     autoleague --version
 
 Options:
     --working_dir=<working_dir>  Where to store inputs and outputs of the league.
-    --num_matches=N              [default: 5].
     --replays=R                  What to do with the replays of the match. Valid values are 'save', and 'calculated_gg'. [default: calculated_gg]
     --host=<host>            [default: localhost].
     --port=<port>            [default: 8878]
@@ -27,15 +24,15 @@ import subprocess
 
 from docopt import docopt
 
-from autoleague.download_bot_pack import download_bot_pack
-from autoleague.generate_matches import generate_matches
 from autoleague.paths import WorkingDir
 from autoleague.run_matches import run_matches
 from autoleague.version import __version__
 from autoleague.replays import ReplayPreference
 
+
 working_dir_env_var = 'AUTOLEAGUE_WORKING_DIR'
 working_dir_flag = '--working_dir'
+
 
 def main():
     arguments = docopt(__doc__, version=__version__)
@@ -50,13 +47,15 @@ def main():
         sys.exit(1)
     working_dir = WorkingDir(Path(working_dir))
 
-    if arguments['download_bot_pack']:
-        download_bot_pack(working_dir)
-    elif arguments['generate_matches']:
-        generate_matches(working_dir, int(arguments['--num_matches']))
-    elif arguments['run_matches']:
+    if arguments['next_event']:
         replay_preference = ReplayPreference(arguments['--replays'])
-        run_matches(working_dir, replay_preference)
+        run_next_event(working_dir, replay_preference)
+    elif arguments['next_round_robin']:
+        replay_preference = ReplayPreference(arguments['--replays'])
+        run_next_round_robin(working_dir, replay_preference)
+    elif arguments['next_round_robin']:
+        replay_preference = ReplayPreference(arguments['--replays'])
+        run_next_match(working_dir, replay_preference)
     elif arguments['history_dev_server']:
         subprocess.run(
             f'rlbottraining history_dev_server {working_dir.history_dir} --host="{arguments["--host"]}" --port={int(arguments["--port"])}',
@@ -65,5 +64,6 @@ def main():
     else:
         raise NotImplementedError()
 
+
 if __name__ == '__main__':
-  main()
+    main()
