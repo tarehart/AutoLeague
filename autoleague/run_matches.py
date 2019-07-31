@@ -1,6 +1,7 @@
 import json
 import random
 import shutil
+import time
 from enum import Enum
 from pathlib import Path
 from typing import Tuple, Mapping
@@ -9,6 +10,7 @@ from rlbot.matchconfig.conversions import as_match_config, read_match_config_fro
 from rlbot.matchconfig.match_config import MatchConfig, PlayerConfig, Team
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 from rlbot.parsing.directory_scanner import scan_directory_for_bot_configs
+from rlbot.training.training import Fail
 from rlbot.utils.logging_utils import get_logger
 from rlbot.utils.structures.game_data_struct import GameTickPacket
 from rlbot.utils.structures.game_interface import GameInterface
@@ -207,14 +209,21 @@ def progress_league_play(working_dir: WorkingDir, run_option: RunOption, replay_
 
                 # For loop, but should only run exactly once
                 for exercise_result in run_playlist([match]):
-                    # TODO Check of grade=PASS otherwise replay was not saved. User should be warned
-                    result = exercise_result.exercise.grader.match_result
+
+                    # Warn users if no replay was found
+                    if isinstance(exercise_result.grade, Fail) and exercise_result.exercise.grader.replay_monitor.replay_id == None:
+                        print(f'WARNING: No replay was found for the match \'{match_participants[0]} vs {match_participants[1]}\'. Is Bakkesmod injected and \'Automatically save all replays\' enabled?')
 
                     # Save result in file
+                    result = exercise_result.exercise.grader.match_result
                     result.write(result_path)
                     print(f'Match finished {result.blue_goals}-{result.orange_goals}. Saved result as {result_path}')
 
                     rr_results.append(result)
+
+                    # Let the winner celebrate and the scoreboard time enough to appear for a few seconds.
+                    # This sleep not required unnecessary.
+                    time.sleep(8)
 
         print(f'{Ladder.DIVISION_NAMES[div_index]} division done')
         event_results.append(rr_results)
