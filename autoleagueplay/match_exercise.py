@@ -12,8 +12,8 @@ from rlbottraining.match_configs import make_default_match_config
 from rlbottraining.rng import SeededRandomNumberGenerator
 from rlbottraining.training_exercise import TrainingExercise
 
-from autoleague.match_result import MatchResult
-from autoleague.replays import ReplayPreference, ReplayMonitor
+from autoleagueplay.match_result import MatchResult
+from autoleagueplay.replays import ReplayPreference, ReplayMonitor
 
 
 class FailDueToNoReplay(Fail):

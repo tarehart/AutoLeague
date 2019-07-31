@@ -1,9 +1,9 @@
 """AutoLeague
 
 Usage:
-    autoleague (odd | even) <ladder> [--replays=R]
-    autoleague (-h | --help)
-    autoleague --version
+    autoleagueplay (odd | even) <ladder> [--replays=R]
+    autoleagueplay (-h | --help)
+    autoleagueplay --version
 
 Options:
     --replays=R                  What to do with the replays of the match. Valid values are 'save', and 'calculated_gg'. [default: save]
@@ -16,10 +16,10 @@ from pathlib import Path
 
 from docopt import docopt
 
-from autoleague.paths import WorkingDir
-from autoleague.replays import ReplayPreference
-from autoleague.run_matches import run_league_play
-from autoleague.version import __version__
+from autoleagueplay.paths import WorkingDir
+from autoleagueplay.replays import ReplayPreference
+from autoleagueplay.run_matches import run_league_play
+from autoleagueplay.version import __version__
 
 ladder_arg = '<ladder>'
 

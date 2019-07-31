@@ -7,9 +7,9 @@ Recommended: Use [Bakkesmod](https://bakkesmod.com/) and have 'Automatically sav
 
 Usage:
 ```
-autoleague (odd | even) <path/to/current/ladder.txt>  | Plays an odd or even week from the given ladder
-autoleague (-h | --help)                              | Show commands and options
-autoleague --version                                  | Show version
+autoleagueplay (odd | even) <path/to/current/ladder.txt>  | Plays an odd or even week from the given ladder
+autoleagueplay (-h | --help)                              | Show commands and options
+autoleagueplay --version                                  | Show version
 ```
 
 Options:

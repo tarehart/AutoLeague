@@ -10,14 +10,14 @@ from rlbot.training.training import Fail
 from rlbot.utils.logging_utils import get_logger
 from rlbottraining.exercise_runner import run_playlist
 
-from autoleague.generate_matches import generate_round_robin_matches
-from autoleague.ladder import Ladder
-from autoleague.match_exercise import MatchExercise, MatchGrader
-from autoleague.match_result import CombinedScore, MatchResult
-from autoleague.paths import WorkingDir, PackageFiles
-from autoleague.replays import ReplayPreference, ReplayMonitor
+from autoleagueplay.generate_matches import generate_round_robin_matches
+from autoleagueplay.ladder import Ladder
+from autoleagueplay.match_exercise import MatchExercise, MatchGrader
+from autoleagueplay.match_result import CombinedScore, MatchResult
+from autoleagueplay.paths import WorkingDir, PackageFiles
+from autoleagueplay.replays import ReplayPreference, ReplayMonitor
 
-logger = get_logger('autoleague')
+logger = get_logger('autoleagueplay')
 
 
 def make_match_config(working_dir: WorkingDir, blue: BotConfigBundle, orange: BotConfigBundle) -> MatchConfig:
