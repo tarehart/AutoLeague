@@ -25,10 +25,9 @@ def make_match_config(working_dir: WorkingDir, blue: BotConfigBundle, orange: Bo
     match_config.game_map = random.choice([
         'ChampionsField',
         'Farmstead',
-        'StarbaseArc',
         'DFHStadium',
-        'SaltyShores',
         'Wasteland',
+        'BeckwithPark'
     ])
     blue_path = str((Path(blue.config_directory) / blue.config_file_name).relative_to(working_dir.bots))
     orange_path = str((Path(orange.config_directory) / orange.config_file_name).relative_to(working_dir.bots))
