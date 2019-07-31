@@ -32,9 +32,10 @@ class Ladder:
 
     def write(self, path: Path):
         with open(path, 'w') as f:
-            json.dump(self.bots, f, indent=4)
+            for bot in self.bots:
+                f.write(f'{bot}')
 
     @staticmethod
     def read(path: Path) -> 'Ladder':
         with open(path, 'r') as f:
-            return Ladder(json.load(f))
+            return Ladder([line.strip() for line in f])
