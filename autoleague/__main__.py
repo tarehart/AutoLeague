@@ -10,7 +10,7 @@ Usage:
 
 Options:
     --working_dir=<working_dir>  Where to store inputs and outputs of the league.
-    --replays=R                  What to do with the replays of the match. Valid values are 'save', and 'calculated_gg'. [default: calculated_gg]
+    --replays=R                  What to do with the replays of the match. Valid values are 'save', and 'calculated_gg'. [default: save]
     --host=<host>            [default: localhost].
     --port=<port>            [default: 8878]
     -h --help                    Show this screen.

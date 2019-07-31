@@ -133,30 +133,6 @@ def add_missing_bots(ladder: Ladder, bots: Mapping[str, BotConfigBundle]):
         print(f'Bots added to bottom of ladder: {missing_bots}')
 
 
-def fetch_ingame_result(exercise_result: ExerciseResult) -> MatchResult:
-    game_interface = GameInterface(get_logger('leagueplayer'))
-    game_interface.load_interface()
-    game_interface.wait_until_loaded()
-
-    packet = GameTickPacket()
-    game_interface.update_live_data_packet(packet)
-
-    blue = packet.game_cars[0]
-    orange = packet.game_cars[1]
-    return MatchResult(
-        blue=blue.name,
-        orange=orange.name,
-        blue_goals=packet.teams[0].score,
-        orange_goals=packet.teams[1].score,
-        blue_shots=blue.score_info.shots,
-        orange_shots=orange.score_info.shots,
-        blue_saves=blue.score_info.saves,
-        orange_saves=orange.score_info.saves,
-        blue_points=blue.score_info.score,
-        orange_points=orange.score_info.score
-    )
-
-
 def progress_league_play(working_dir: WorkingDir, run_option: RunOption, replay_preference: ReplayPreference):
     """
     Progress League Play by playing the next event, round robin, or match as specified by the run_option.
@@ -230,15 +206,15 @@ def progress_league_play(working_dir: WorkingDir, run_option: RunOption, replay_
                 )
 
                 # For loop, but should only run exactly once
-                result = None
                 for exercise_result in run_playlist([match]):
-                    result = fetch_ingame_result(exercise_result)
+                    # TODO Check of grade=PASS otherwise replay was not saved. User should be warned
+                    result = exercise_result.exercise.grader.match_result
 
-                # Save result in file
-                result.write(result_path)
-                print(f'Match finished {result.blue_goals}-{result.orange_goals}. Saved result as {result_path}')
+                    # Save result in file
+                    result.write(result_path)
+                    print(f'Match finished {result.blue_goals}-{result.orange_goals}. Saved result as {result_path}')
 
-                rr_results.append(result)
+                    rr_results.append(result)
 
         print(f'{Ladder.DIVISION_NAMES[div_index]} division done')
         event_results.append(rr_results)

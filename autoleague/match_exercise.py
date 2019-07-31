@@ -12,6 +12,7 @@ from rlbottraining.match_configs import make_default_match_config
 from rlbottraining.rng import SeededRandomNumberGenerator
 from rlbottraining.training_exercise import TrainingExercise
 
+from autoleague.match_result import MatchResult
 from autoleague.replays import ReplayPreference, ReplayMonitor
 
 
@@ -27,12 +28,14 @@ class MatchGrader(Grader):
 
     last_match_time: float = 0
     last_game_tick_packet: GameTickPacket = None
+    match_result: Optional[MatchResult] = None
 
     def on_tick(self, tick: TrainingTickPacket) -> Optional[Grade]:
         self.replay_monitor.ensure_monitoring()
         self.last_game_tick_packet = tick.game_tick_packet
         game_info = tick.game_tick_packet.game_info
         if game_info.is_match_ended:
+            self.fetch_match_score(tick.game_tick_packet)
             if self.replay_monitor.replay_id:
                 self.replay_monitor.stop_monitoring()
                 return Pass()
@@ -42,6 +45,23 @@ class MatchGrader(Grader):
                 return FailDueToNoReplay()
         else:
             self.last_match_time = game_info.seconds_elapsed
+            return None
+
+    def fetch_match_score(self, packet: GameTickPacket):
+        blue = packet.game_cars[0]
+        orange = packet.game_cars[1]
+        self.match_result = MatchResult(
+            blue=blue.name,
+            orange=orange.name,
+            blue_goals=packet.teams[0].score,
+            orange_goals=packet.teams[1].score,
+            blue_shots=blue.score_info.shots,
+            orange_shots=orange.score_info.shots,
+            blue_saves=blue.score_info.saves,
+            orange_saves=orange.score_info.saves,
+            blue_points=blue.score_info.score,
+            orange_points=orange.score_info.score
+        )
 
 
 @dataclass

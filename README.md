@@ -3,6 +3,8 @@
 
 # How to use:
 
+You must use [Bakkesmod](https://bakkesmod.com/) and have 'Automatically save all replays' enabled.
+
 To run most commands, you'll need to specify a `--working_dir` flag or alternatively, you can set a `AUTOLEAGUE_WORKING_DIR` environment variable to save yourself future typing.
 
 Usage:

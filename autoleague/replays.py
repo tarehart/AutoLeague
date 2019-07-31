@@ -1,15 +1,12 @@
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Optional, Dict, Any
-import requests
-import time
+from typing import Dict, Any
 
-from pywinauto import Desktop, Application, keyboard
+import requests
+from rlbottraining.history.metric import Metric
 from watchdog.events import LoggingEventHandler
 from watchdog.observers import Observer
-
-from rlbottraining.history.metric import Metric
 
 
 class ReplayPreference(Enum):
@@ -74,6 +71,6 @@ class ReplayMonitor(Metric):
 
 
 def get_replay_dir() -> Path:
-    replay_dir = Path.home() / 'My Documents' / 'My Games' / 'Rocket League' / 'TAGame' / 'Demos'
+    replay_dir = Path.home() / 'documents' / 'My Games' / 'Rocket League' / 'TAGame' / 'Demos'
     assert replay_dir.exists()
     return replay_dir
