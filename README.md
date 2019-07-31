@@ -5,6 +5,10 @@
 
 Recommended: Use [Bakkesmod](https://bakkesmod.com/) and have 'Automatically save all replays' enabled.
 
+Installation:
+- To install, clone this repo and run `pip install -e .` in the directory containing `setup.py`.
+- This should give you access to the `autoleagueplay` command line tool. Try `autoleague --help`.
+
 Usage:
 ```
 autoleagueplay (odd | even) <path/to/current/ladder.txt>  | Plays an odd or even week from the given ladder
