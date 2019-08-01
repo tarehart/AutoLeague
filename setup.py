@@ -19,10 +19,12 @@ setuptools.setup(
     name='autoleagueplay',
     packages=setuptools.find_packages(),
     install_requires=[
+        'dataclasses',
         'rlbot',
         'rlbottraining>=0.3.0',
         'docopt',
         'requests',
+        'watchdog'
     ],
     python_requires='>=3.7.0',
     version=version.__version__,
