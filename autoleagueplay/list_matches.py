@@ -1,9 +1,10 @@
 from autoleagueplay.generate_matches import get_playing_division_indices, load_all_bots, generate_round_robin_matches
 from autoleagueplay.ladder import Ladder
+from autoleagueplay.match_result import MatchResult
 from autoleagueplay.paths import WorkingDir
 
 
-def list_matches(working_dir: WorkingDir, odd_week: bool):
+def list_matches(working_dir: WorkingDir, odd_week: bool, show_results: bool):
     """
     Prints all the matches that will be run this week.
     """
@@ -21,4 +22,13 @@ def list_matches(working_dir: WorkingDir, odd_week: bool):
         rr_matches = generate_round_robin_matches(rr_bots)
 
         for match_participants in rr_matches:
-            print(f'{match_participants[0]} vs {match_participants[1]}')
+
+            # Find result if show_results==True
+            result_str = ''
+            if show_results:
+                result_path = working_dir.get_match_result(div_index, match_participants[0], match_participants[1])
+                if result_path.exists():
+                    result = MatchResult.read(result_path)
+                    result_str = f'  (result: {result.blue_goals}-{result.orange_goals})'
+
+            print(f'{match_participants[0]} vs {match_participants[1]}{result_str}')

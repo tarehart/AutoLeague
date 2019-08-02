@@ -1,13 +1,14 @@
 """AutoLeague
 
 Usage:
-    autoleagueplay (odd | even) <ladder> [--replays=R] [--list]
+    autoleagueplay (odd | even) <ladder> [--replays=R] [--list|--results]
     autoleagueplay (-h | --help)
     autoleagueplay --version
 
 Options:
     --replays=R                  What to do with the replays of the match. Valid values are 'save', and 'calculated_gg'. [default: save]
-    -l --list                    Instead of playing the matches, the list of matches is printed
+    --list                       Instead of playing the matches, the list of matches is printed.
+    --results                    Like --list but also shows the result of matches that has been played.
     -h --help                    Show this screen.
     --version                    Show version.
 """
@@ -37,8 +38,10 @@ def main():
     replay_preference = ReplayPreference(arguments['--replays'])
 
     if arguments['odd'] or arguments['even']:
-        if arguments['--list'] or arguments['-l']:
-            list_matches(working_dir, arguments['odd'])
+        if arguments['--results']:
+            list_matches(working_dir, arguments['odd'], True)
+        elif arguments['--list']:
+            list_matches(working_dir, arguments['odd'], False)
         else:
             run_league_play(working_dir, arguments['odd'], replay_preference)
     else:

@@ -19,7 +19,8 @@ autoleagueplay --version                                  | Show version
 Options:
 ```
 --replays=R          What to do with the replays of the match. Valid values are 'save', and 'calculated_gg'. [default: save]
--l --list            Instead of playing the matches, the list of matches is printed
+--list               Instead of playing the matches, the list of matches is printed.
+--results            Like --list but also shows the result of matches that has been played.
 -h --help            Show this screen.
 --version            Show version.
 ```

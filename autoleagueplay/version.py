@@ -1,11 +1,14 @@
 # https://stackoverflow.com/questions/458550/standard-way-to-embed-version-into-python-package
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 release_notes = {
+    '0.2.0': '''
+        - Added a --list and --results option to show matches that will be played and their results
+    ''',
     '0.1.0': '''
         - Modified DomNomNom's AutoLeague script to run League Play matches
-    ''',
+    '''
 }
 
 
