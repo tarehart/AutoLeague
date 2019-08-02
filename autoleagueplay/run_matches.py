@@ -65,7 +65,7 @@ def run_league_play(working_dir: WorkingDir, odd_week: bool, replay_preference: 
         rr_results = []
 
         for match_participants in rr_matches:
-
+            match_participants = list(map(str.lower, match_participants))
             # Check if match has already been play, i.e. the result file already exist
             result_path = working_dir.get_match_result(div_index, match_participants[0], match_participants[1])
             if result_path.exists():
