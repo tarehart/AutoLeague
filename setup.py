@@ -50,4 +50,5 @@ setuptools.setup(
             'autoleagueplay/default_match_config.cfg'
         ]
     },
+    include_package_data=True
 )
