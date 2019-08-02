@@ -10,7 +10,7 @@ from rlbot.training.training import Fail
 from rlbot.utils.logging_utils import get_logger
 from rlbottraining.exercise_runner import run_playlist
 
-from autoleagueplay.generate_matches import generate_round_robin_matches
+from autoleagueplay.generate_matches import generate_round_robin_matches, load_all_bots
 from autoleagueplay.ladder import Ladder
 from autoleagueplay.match_exercise import MatchExercise, MatchGrader
 from autoleagueplay.match_result import CombinedScore, MatchResult
@@ -43,15 +43,7 @@ def run_league_play(working_dir: WorkingDir, odd_week: bool, replay_preference: 
     Progress League Play by playing the next event, round robin, or match as specified by the run_option.
     """
 
-    # Load all bots
-    bots = working_dir.get_bots()
-    if len(bots) < 2:
-        # Not enough bots to play
-        print(f'Not enough bots to run league play. Must have at least 2 (found {len(bots)})')
-        return
-    else:
-        print(f'Loaded {len(bots)} bots')
-
+    bots = load_all_bots(working_dir)
     ladder = Ladder.read(working_dir.ladder)
 
     # We need the result of every match to create the next ladder. For each match in each round robin, if a result
