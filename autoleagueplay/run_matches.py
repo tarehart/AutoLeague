@@ -10,8 +10,9 @@ from rlbot.training.training import Fail
 from rlbot.utils.logging_utils import get_logger
 from rlbottraining.exercise_runner import run_playlist
 
-from autoleagueplay.generate_matches import generate_round_robin_matches, load_all_bots
+from autoleagueplay.generate_matches import generate_round_robin_matches
 from autoleagueplay.ladder import Ladder
+from autoleagueplay.load_bots import load_all_bots, psyonix_bots
 from autoleagueplay.match_exercise import MatchExercise, MatchGrader
 from autoleagueplay.match_result import CombinedScore, MatchResult
 from autoleagueplay.paths import WorkingDir, PackageFiles
@@ -29,13 +30,19 @@ def make_match_config(working_dir: WorkingDir, blue: BotConfigBundle, orange: Bo
         'Wasteland',
         'BeckwithPark'
     ])
-    blue_path = str((Path(blue.config_directory) / blue.config_file_name).relative_to(working_dir.bots))
-    orange_path = str((Path(orange.config_directory) / orange.config_file_name).relative_to(working_dir.bots))
     match_config.player_configs = [
-        PlayerConfig.bot_config(working_dir.bots / blue_path, Team.BLUE),
-        PlayerConfig.bot_config(working_dir.bots / orange_path, Team.ORANGE),
+        make_bot_config(blue, Team.BLUE),
+        make_bot_config(orange, Team.ORANGE)
     ]
     return match_config
+
+
+def make_bot_config(config_bundle: BotConfigBundle, team: Team) -> PlayerConfig:
+    # Our main concern here is Psyonix bots
+    player_config = PlayerConfig.bot_config(Path(config_bundle.config_path), team)
+    player_config.rlbot_controlled = player_config.name not in psyonix_bots.keys()
+    player_config.bot_skill = psyonix_bots.get(player_config.name, 1.0)
+    return player_config
 
 
 def run_league_play(working_dir: WorkingDir, odd_week: bool, replay_preference: ReplayPreference):

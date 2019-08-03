@@ -1,10 +1,7 @@
 import random
-from typing import List, Tuple, Mapping
-
-from rlbot.parsing.bot_config_bundle import BotConfigBundle
+from typing import List, Tuple
 
 from autoleagueplay.ladder import Ladder
-from autoleagueplay.paths import WorkingDir
 
 
 def generate_round_robin_matches(bots: List[str]) -> List[Tuple[str, str]]:
@@ -23,13 +20,6 @@ def generate_round_robin_matches(bots: List[str]) -> List[Tuple[str, str]]:
 
     random.shuffle(matches)
     return matches
-
-
-def load_all_bots(working_dir: WorkingDir) -> Mapping[str, BotConfigBundle]:
-    bots = working_dir.get_bots()
-    assert len(bots) >= 2, f'Not enough bots to run league play. Must have at least 2 (found {len(bots)})'
-    print(f'Loaded {len(bots)} bots')
-    return bots
 
 
 def get_playing_division_indices(ladder: Ladder, odd_week: bool) -> List[int]:

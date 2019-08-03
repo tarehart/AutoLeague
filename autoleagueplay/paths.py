@@ -59,3 +59,7 @@ class PackageFiles:
     """
     _package_dir = Path(__file__).absolute().parent
     default_match_config = _package_dir / 'default_match_config.cfg'
+
+    psyonix_allstar = _package_dir / 'psyonix_allstar.cfg'
+    psyonix_pro = _package_dir / 'psyonix_pro.cfg'
+    psyonix_rookie = _package_dir / 'psyonix_rookie.cfg'

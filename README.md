@@ -28,7 +28,7 @@ Options:
 
 The ladder is described by a text file, e.g. `ladder.txt`.
 This should contain the bot names separated by newlines (it can be copy-pasted directly from the sheet).
-A `bots` directory with all the bots and their files must be located next to the ladder file.
+A `bots/` directory with all the bots and their files must be located next to the ladder file.
 
 When running the script you point it to the ladder file and give it either `odd` or `even` as argument to set what type of week it should play:
 - Odd: Overclocked, Circuit, Transitor, ect plays.
@@ -40,3 +40,7 @@ When all results are found, a new ladder `ladder_new.txt` is created next to the
 #### Other:
 
 Change `autoleague/default_match_config.cfg` for other game modes and mutators.
+
+AutoLeaguePlay can handle Psyonix bots, but their names must be: `Psyonix Allstar`, `Psyonix Pro`, and `Psyonix Rookie`.
+You don't have to give them config files in the `bots/` directory. AutoLeaguePlay has its own config files for Psyonix bots.
+If you really want to give them different names, change them [there](https://github.com/NicEastvillage/AutoLeague/blob/master/autoleagueplay/psyonix_allstar.cfg).

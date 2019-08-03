@@ -47,7 +47,10 @@ setuptools.setup(
     },
     package_data={
         'autoleagueplay': [
-            'autoleagueplay/default_match_config.cfg'
+            'autoleagueplay/default_match_config.cfg',
+            'autoleagueplay/psyonix_allstar.cfg',
+            'autoleagueplay/psyonix_pro.cfg',
+            'autoleagueplay/psyonix_rookie.cfg'
         ]
     },
     include_package_data=True

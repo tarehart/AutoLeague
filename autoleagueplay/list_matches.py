@@ -1,4 +1,4 @@
-from autoleagueplay.generate_matches import get_playing_division_indices, load_all_bots, generate_round_robin_matches
+from autoleagueplay.generate_matches import get_playing_division_indices, generate_round_robin_matches
 from autoleagueplay.ladder import Ladder
 from autoleagueplay.match_result import MatchResult
 from autoleagueplay.paths import WorkingDir
