@@ -33,7 +33,7 @@ class Ladder:
     def write(self, path: Path):
         with open(path, 'w') as f:
             for bot in self.bots:
-                f.write(f'{bot}')
+                f.write(f'{bot}\n')
 
     @staticmethod
     def read(path: Path) -> 'Ladder':
