@@ -15,6 +15,7 @@ from autoleagueplay.ladder import Ladder
 from autoleagueplay.load_bots import load_all_bots, psyonix_bots
 from autoleagueplay.match_exercise import MatchExercise, MatchGrader
 from autoleagueplay.match_result import CombinedScore, MatchResult
+from autoleagueplay.overlay import OverlayData
 from autoleagueplay.paths import WorkingDir, PackageFiles
 from autoleagueplay.replays import ReplayPreference, ReplayMonitor
 
@@ -47,7 +48,7 @@ def make_bot_config(config_bundle: BotConfigBundle, team: Team) -> PlayerConfig:
 
 def run_league_play(working_dir: WorkingDir, odd_week: bool, replay_preference: ReplayPreference):
     """
-    Progress League Play by playing the next event, round robin, or match as specified by the run_option.
+    Run a league play event by running round robins for half the divisions. When done, a new ladder file is created.
     """
 
     bots = load_all_bots(working_dir)
@@ -102,6 +103,10 @@ def run_league_play(working_dir: WorkingDir, odd_week: bool, replay_preference: 
                     )
                 )
 
+                # Let overlay know which match we are about to start
+                overlay_data = OverlayData(div_index, bots[match_participants[0]].config_path, bots[match_participants[1]].config_path)
+                overlay_data.write(working_dir.overlay_interface)
+
                 # For loop, but should only run exactly once
                 for exercise_result in run_playlist([match]):
 
@@ -116,8 +121,8 @@ def run_league_play(working_dir: WorkingDir, odd_week: bool, replay_preference: 
 
                     rr_results.append(result)
 
-                    # Let the winner celebrate and the scoreboard time enough to appear for a few seconds.
-                    # This sleep not required unnecessary.
+                    # Let the winner celebrate and the scoreboard show for a few seconds.
+                    # This sleep not required.
                     time.sleep(8)
 
         print(f'{Ladder.DIVISION_NAMES[div_index]} division done')
@@ -139,5 +144,9 @@ def run_league_play(working_dir: WorkingDir, odd_week: bool, replay_preference: 
     # Save new ladder
     Ladder.write(new_ladder, working_dir.new_ladder)
     print(f'Done. Saved new ladder as {working_dir.new_ladder.name}')
+
+    # Remove overlay interface file now that we are done
+    if working_dir.overlay_interface.exists():
+        working_dir.overlay_interface.unlink()
 
     return new_ladder

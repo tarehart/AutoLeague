@@ -36,6 +36,7 @@ class WorkingDir:
         self.new_ladder = self._working_dir / f'{ladder_path.stem}_new.txt'
         self.match_results = working_dir / f'{ladder_path.stem}_results'
         self.bots = working_dir / 'bots'
+        self.overlay_interface = working_dir / 'current_match.json'
         self._ensure_directory_structure()
 
     def _ensure_directory_structure(self):

@@ -37,10 +37,27 @@ When running the script you point it to the ladder file and give it either `odd`
 Results are stored in a matches directory next to the ladder file. Each match will get a json file with all the relevant data, and they are named something like `quantum_ReliefBot_vs_Atlas_result.json`.
 When all results are found, a new ladder `ladder_new.txt` is created next to the original ladder file.
 
-#### Other:
+### Advanced Usage:
 
+##### Match Config
 Change `autoleague/default_match_config.cfg` for other game modes and mutators.
 
+##### Psyonix Bots
 AutoLeaguePlay can handle Psyonix bots, but their names must be: `Psyonix Allstar`, `Psyonix Pro`, and `Psyonix Rookie`.
 You don't have to give them config files in the `bots/` directory. AutoLeaguePlay has its own config files for Psyonix bots.
 If you really want to give them different names, change them [there](https://github.com/NicEastvillage/AutoLeague/blob/master/autoleagueplay/psyonix_allstar.cfg).
+
+##### Current Match and Overlay
+AutoLeaguePlay creates a `current_match.json` next to the ladder file whenever a match is about to begin.
+This file contains the division, and the paths to the bots currently playing. E.g.:
+
+```json
+{
+    "division": 0,
+    "blue_config_path": "C:\\User\\RLBot\\League\\bots\\Self-driving car\\self-driving-car.cfg",
+    "orange_config_path": "C:\\User\\RLBot\\League\\bots\\Beast from the East\\beastbot.cfg"
+}
+```
+
+The information in the file can be used for an overlay.
+When the new ladder is complete the `current_match.json` is removed.
