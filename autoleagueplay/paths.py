@@ -48,7 +48,7 @@ class WorkingDir:
 
     def get_bots(self) -> Mapping[str, BotConfigBundle]:
         return {
-            bot_config.name.lower(): bot_config
+            bot_config.name: bot_config
             for bot_config in scan_directory_for_bot_configs(self.bots)
         }
 
