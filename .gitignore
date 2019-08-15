@@ -109,3 +109,6 @@ venv.bak/
 # Credentials and tokens
 sheets-api-token.pickle
 credentials.json
+
+# League
+league/
