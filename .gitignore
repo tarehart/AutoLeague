@@ -103,4 +103,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# IDE
 .idea
+
+# Credentials and tokens
+sheets-api-token.pickle
+credentials.json
