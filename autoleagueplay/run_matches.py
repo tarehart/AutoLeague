@@ -19,7 +19,7 @@ from autoleagueplay.replays import ReplayPreference, ReplayMonitor
 logger = get_logger('autoleagueplay')
 
 
-def run_match(participant_1: str, participant_2: str, match_config, replay_preference):
+def run_match(participant_1: str, participant_2: str, match_config, replay_preference) -> MatchResult:
 
     # Play the match
     print(f'Starting match: {participant_1} vs {participant_2}. Waiting for match to finish...')
