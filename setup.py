@@ -24,7 +24,8 @@ setuptools.setup(
         'rlbottraining>=0.3.0',
         'docopt',
         'requests',
-        'watchdog'
+        'watchdog',
+        'gitpython'
     ],
     python_requires='>=3.7.0',
     version=version.__version__,
