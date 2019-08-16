@@ -1,3 +1,4 @@
+import time
 from os.path import relpath
 from time import sleep
 
@@ -64,6 +65,9 @@ class BubbleSorter:
             raise Exception(f'Need at least 2 bots to run a bubble sort! Found {num_bots}')
         self.num_already_played_during_iteration = 0
         self.advance(0)
+        overlay_data = BubbleSortOverlayData(self.bots, self.versioned_bots_by_name, 0, False,
+                                             self.working_dir._working_dir, winner=self.bots[0], sort_complete=True)
+        overlay_data.write(self.working_dir.overlay_interface)
 
     def get_past_result(self, bot_1, bot_2) -> MatchResult:
         path = self.get_result_path(bot_1, bot_2)
@@ -147,3 +151,4 @@ def run_bubble_sort(working_dir: WorkingDir, team_size: int, replay_preference: 
 
     sorter = BubbleSorter(ladder, working_dir, team_size, replay_preference)
     sorter.begin()
+    time.sleep(10)  # Leave some time to display the overlay.

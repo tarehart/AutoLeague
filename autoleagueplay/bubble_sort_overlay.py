@@ -5,7 +5,8 @@ from typing import List
 
 
 class BubbleSortOverlayData:
-    def __init__(self, ladder: List[str], versioned_map, sort_index: int, needs_match: bool, root_dir, winner: str=None):
+    def __init__(self, ladder: List[str], versioned_map, sort_index: int, needs_match: bool, root_dir, winner: str=None,
+                 sort_complete: bool=False):
         self.ladder = ladder
         self.bot_map = {}
 
@@ -24,6 +25,7 @@ class BubbleSortOverlayData:
         self.sort_index = sort_index
         self.needs_match = needs_match
         self.winner = winner
+        self.sort_complete = sort_complete
 
     def write(self, path: Path):
         with open(path, 'w') as f:
