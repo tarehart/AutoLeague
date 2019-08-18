@@ -19,7 +19,6 @@ class BubbleSortOverlayData:
                 'name': versioned_map[bot].bot_config.name,
                 'logo': logo,
                 'updated_date': versioned_map[bot].updated_date.timestamp(),
-                'commit': versioned_map[bot].commit_hash
             }
 
         self.sort_index = sort_index

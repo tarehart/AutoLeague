@@ -1,8 +1,10 @@
+import subprocess
+import sys
 import time
+from datetime import datetime
 from os.path import relpath
 from time import sleep
 
-from git import Repo
 from rlbot.parsing.directory_scanner import scan_directory_for_bot_configs
 
 from autoleagueplay.bubble_sort_overlay import BubbleSortOverlayData
@@ -27,10 +29,18 @@ class BubbleSorter:
         self.versioned_bots_by_name = {}
         self.num_already_played_during_iteration = 0
 
-    def pull_bots(self):
+    def try_gather_versioned_bots(self):
+        for i in range(3):
+            try:
+                self.gather_versioned_bots()
+                return
+            except Exception as e:
+                print(e)
+                sleep(1)
+
+    def gather_versioned_bots(self):
         git_root = self.working_dir._working_dir
-        repo = Repo(git_root)
-        repo.remote().pull()
+        subprocess.call(['git', 'pull'], cwd=git_root)
 
         bot_folders = [p for p in self.working_dir.bots.iterdir() if p.is_dir()]
 
@@ -38,9 +48,12 @@ class BubbleSorter:
 
         for folder in bot_folders:
             relative_path = relpath(folder, git_root)
-            latest_commit = list(repo.iter_commits(paths=relative_path, max_count=1))[0]
+            iso_date_binary = subprocess.check_output(
+                ["git", "log", "-n", "1", '--format="%ad"', "--date=iso-strict", "--", relative_path], cwd=git_root)
+            iso_date = iso_date_binary.decode(sys.stdout.encoding).strip("\"\n")
+
             for bot_config in scan_directory_for_bot_configs(folder):
-                versioned_bot = VersionedBot(bot_config, latest_commit)
+                versioned_bot = VersionedBot(bot_config, datetime.fromisoformat(iso_date))
                 print(versioned_bot)
                 versioned_bots.add(versioned_bot)
 
@@ -61,7 +74,7 @@ class BubbleSorter:
         self.ladder.write(self.working_dir.ladder)
 
     def begin(self):
-        self.pull_bots()
+        self.gather_versioned_bots()
         num_bots = len(self.ladder.bots)
         if num_bots < 2:
             raise Exception(f'Need at least 2 bots to run a bubble sort! Found {num_bots}')
@@ -143,7 +156,6 @@ class BubbleSorter:
             overlay_data = BubbleSortOverlayData(self.ladder.bots, self.versioned_bots_by_name, upper_index, True,
                                                  self.working_dir._working_dir, winner=match_result.winner.lower())
             overlay_data.write(self.working_dir.overlay_interface)
-            self.pull_bots()
             sleep(7)
 
             self._on_match_complete(match_result, upper_index)
@@ -156,4 +168,5 @@ def run_bubble_sort(working_dir: WorkingDir, team_size: int, replay_preference: 
 
     sorter = BubbleSorter(ladder, working_dir, team_size, replay_preference)
     sorter.begin()
+    print('Bubble sort is complete!')
     time.sleep(10)  # Leave some time to display the overlay.

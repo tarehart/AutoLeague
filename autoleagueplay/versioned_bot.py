@@ -1,13 +1,11 @@
 from datetime import datetime
 
-from git import Commit
 from rlbot.parsing.bot_config_bundle import BotConfigBundle
 
 
 class VersionedBot:
-    def __init__(self, bot_config: BotConfigBundle, commit: Commit):
-        self.updated_date = datetime.fromtimestamp(commit.authored_datetime.timestamp())
-        self.commit_hash = commit.hexsha
+    def __init__(self, bot_config: BotConfigBundle, updated_date: datetime):
+        self.updated_date = updated_date
         self.bot_config = bot_config
 
     def __str__(self):
