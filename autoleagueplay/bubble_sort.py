@@ -1,6 +1,7 @@
 import subprocess
 import sys
 import time
+from dataclasses import dataclass
 from datetime import datetime
 from os.path import relpath
 from time import sleep
@@ -15,6 +16,12 @@ from autoleagueplay.paths import WorkingDir
 from autoleagueplay.replays import ReplayPreference
 from autoleagueplay.run_matches import run_match
 from autoleagueplay.versioned_bot import VersionedBot
+
+
+@dataclass
+class SortStepOutcome:
+    upper_index: int
+    sort_complete: bool
 
 
 class BubbleSorter:
@@ -40,6 +47,7 @@ class BubbleSorter:
 
     def gather_versioned_bots(self):
         git_root = self.working_dir._working_dir
+
         subprocess.call(['git', 'pull'], cwd=git_root)
 
         bot_folders = [p for p in self.working_dir.bots.iterdir() if p.is_dir()]
@@ -79,7 +87,14 @@ class BubbleSorter:
         if num_bots < 2:
             raise Exception(f'Need at least 2 bots to run a bubble sort! Found {num_bots}')
         self.num_already_played_during_iteration = 0
-        self.advance(0)
+
+        next_index = 0
+        while True:
+            step_outcome = self.advance(next_index)
+            if step_outcome.sort_complete:
+                break
+            next_index = step_outcome.upper_index
+
         overlay_data = BubbleSortOverlayData(self.ladder.bots, self.versioned_bots_by_name, 0, False,
                                              self.working_dir._working_dir, winner=self.ladder.bots[0],
                                              sort_complete=True)
@@ -101,7 +116,7 @@ class BubbleSorter:
         versioned_bot_2 = self.versioned_bots_by_name[bot_2]
         return self.working_dir.get_version_specific_match_result(versioned_bot_1, versioned_bot_2)
 
-    def _on_match_complete(self, result, upper_index):
+    def _on_match_complete(self, result):
 
         winner = result.winner.lower()
         loser = result.loser.lower()
@@ -115,16 +130,15 @@ class BubbleSorter:
             self.ladder.bots[winner_index] = loser
 
         self.ladder.write(self.working_dir.ladder)
-        self.advance(upper_index)
 
-    def advance(self, upper_index):
+    def advance(self, upper_index) -> SortStepOutcome:
 
         num_bots = len(self.ladder.bots)
 
         if upper_index == 0:
             # We've reached the top, time to jump back to the bottom (or decide we're done)
             if self.num_already_played_during_iteration == num_bots - 1:
-                return  # bubble sort is over!
+                return SortStepOutcome(upper_index=upper_index, sort_complete=True)  # bubble sort is over!
             else:
                 next_below = self.ladder.bots[num_bots - 1]
                 next_above = self.ladder.bots[num_bots - 2]
@@ -142,8 +156,9 @@ class BubbleSorter:
             overlay_data = BubbleSortOverlayData(self.ladder.bots, self.versioned_bots_by_name, upper_index, False,
                                                  self.working_dir._working_dir)
             overlay_data.write(self.working_dir.overlay_interface)
+            self._on_match_complete(past_result)
             sleep(1)
-            self._on_match_complete(past_result, upper_index)
+            return SortStepOutcome(upper_index=upper_index, sort_complete=False)
         else:
             overlay_data = BubbleSortOverlayData(self.ladder.bots, self.versioned_bots_by_name, upper_index, True,
                                                  self.working_dir._working_dir)
@@ -156,9 +171,10 @@ class BubbleSorter:
             overlay_data = BubbleSortOverlayData(self.ladder.bots, self.versioned_bots_by_name, upper_index, True,
                                                  self.working_dir._working_dir, winner=match_result.winner.lower())
             overlay_data.write(self.working_dir.overlay_interface)
-            sleep(7)
 
-            self._on_match_complete(match_result, upper_index)
+            self._on_match_complete(match_result)
+            sleep(12)
+            return SortStepOutcome(upper_index=upper_index, sort_complete=False)
 
 
 def run_bubble_sort(working_dir: WorkingDir, team_size: int, replay_preference: ReplayPreference):

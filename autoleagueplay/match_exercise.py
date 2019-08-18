@@ -26,14 +26,15 @@ class MatchGrader(Grader):
     last_match_time: float = 0
     last_game_tick_packet: GameTickPacket = None
     match_result: Optional[MatchResult] = None
+    saw_active_packets = False
 
     def on_tick(self, tick: TrainingTickPacket) -> Optional[Grade]:
         self.replay_monitor.ensure_monitoring()
         self.last_game_tick_packet = tick.game_tick_packet
         game_info = tick.game_tick_packet.game_info
-        if game_info.is_match_ended:
+        if game_info.is_match_ended and self.saw_active_packets:
             self.match_result = fetch_match_score(tick.game_tick_packet)
-            if self.replay_monitor.replay_id or ReplayMonitor.replay_preference == ReplayPreference.IGNORE_REPLAY:
+            if self.replay_monitor.replay_id or self.replay_monitor.replay_preference == ReplayPreference.IGNORE_REPLAY:
                 self.replay_monitor.stop_monitoring()
                 return Pass()
             seconds_since_game_end = game_info.seconds_elapsed - self.last_match_time
@@ -41,6 +42,8 @@ class MatchGrader(Grader):
                 self.replay_monitor.stop_monitoring()
                 return FailDueToNoReplay()
         else:
+            if game_info.is_round_active and not game_info.is_match_ended:
+                self.saw_active_packets = True
             self.last_match_time = game_info.seconds_elapsed
             return None
 
